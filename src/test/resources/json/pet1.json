@@ -1,0 +1,16 @@
+{
+  "id": 373981801,
+  "category": {
+    "id": 1,
+    "name": "cachorro"
+  },
+  "name": "Filomena",
+  "photoUrls": [],
+  "tags": [
+    {
+      "id": 9,
+      "name": "vacinado"
+    }
+  ],
+  "status": "available"
+}
