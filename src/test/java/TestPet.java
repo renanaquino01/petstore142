@@ -18,6 +18,7 @@ public class TestPet {
     // 2.1 atributos, variaveis
     static String ct = "application/json"; //content type
     static String uriPet = "https://petstore.swagger.io/v2/pet";
+    static int petId = 373981801;
 
     // 2.2 funçoes e metodos...
     // 2.2.1 ...comuns / uteis
@@ -35,8 +36,7 @@ public class TestPet {
         // carregar dados do arquivo json do pet
         String jsonBody = lerArquivoJson("src/test/resources/json/pet1.json");
         
-        int petId = 373981801; // codigo esperado do pet
-
+        
         // começa o teste via REST-assured
 
         given()                         // dado que
@@ -56,8 +56,37 @@ public class TestPet {
             .body("id", is(petId))                               // verifica o codigo do pet
             .body("category.name", is("cachorro"))         // verifica se é cachorro
             .body("tags[0].name", is("vacinado"))          // verificar  se esta vacinado
-        ;    
+        ;    // fim do BDD
     
+    }
+    @Test
+    public void  testGetPet(){
+        // configura 1
+        // entrada - petId static la em cima
+        // saidas - resultado esperado
+        String petName = "Filomena";
+        String categoryName = "cachorro";
+        String tagsName = "vacinado";
+
+        given()                 // dado
+            .contentType(ct)            
+            .log().all()
+            // qnd é get e delete nao tem body 
+        
+        // executa 2
+        .when()                 // quando
+            .get(uriPet + "/" + petId) // montar o endpoint da URI, com o link + a barra + o petid
+        
+        // valida 3
+        .then()                 // entao
+            .log().all()                                  
+            .statusCode(200) 
+            .body("name", is("Filomena"))       
+            .body("id", is(petId))                               
+            .body("category.name", is("cachorro"))         
+            .body("tags[0].name", is("vacinado"))          
+        ; // fim do BDD
+       
     }
 
 }
