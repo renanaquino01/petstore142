@@ -2,21 +2,18 @@
 
 // 1 blibliotecas
 
-import io.restassured.response.Response; // classe resposta REST-assured
-
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-
-import groovyjarjarasm.asm.commons.Method;
+import static io.restassured.RestAssured.given;     // funçao given
+// classe de verificadores do hamcrest
+import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static io.restassured.RestAssured.given;     // funçao given
-import static org.hamcrest.Matchers.*;              // classe de verificadores do hamcrest
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 // 2 classe
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)  // definir a sequencia de ordem dos testes
@@ -131,11 +128,7 @@ public class TestPet {
             .body("code", is(200))   // confirmou que apagou
             .body("type", is("unknown"))
             .body("message", is(String.valueOf(petId)))
-
         ;
 
-
     }
-
-
 }
