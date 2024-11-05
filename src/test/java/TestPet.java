@@ -14,6 +14,11 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+
+import com.google.gson.Gson;
+
 
 // 2 classe
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)  // definir a sequencia de ordem dos testes
@@ -72,11 +77,11 @@ public class TestPet {
         // configura 1
         // entrada - petId static lna classe
         // saidas - resultado esperado na classe
-        
 
         given()                 // dado
             .contentType(ct)            
             .log().all()
+            .header("", "api_key: " + TestUser.testLogin())
             // qnd é get e delete nao tem body 
         
         // executa 2
@@ -129,6 +134,61 @@ public class TestPet {
             .body("type", is("unknown"))
             .body("message", is(String.valueOf(petId)))
         ;
-
     }
+
+    // massa de teste DDT
+    //teste com Json parametrizado
+
+    @ParameterizedTest @Order (5)
+    @CsvFileSource(resources = "/csv/petMassa.csv", numLinesToSkip = 1, delimiter = ',')
+    public void testPostPetDDT(
+        int petId,
+        String petName,
+        int catId,
+        String catName,
+        String status1,
+        String status2
+    )       // fim dos parametros
+    {       // incio do codigo do metodo testPostPetDDT
+            // criar a classe pet para receber os dados do CSV
+        Pet pet = new Pet(); // instancia a classe User
+        Pet.Category category = pet.new Category();  // instanciar subclasse
+        Pet.Tag[] tags = new Pet.Tag[2]; 
+        tags[0] = pet.new Tag();
+        tags[1] = pet.new Tag();
+
+        pet.id = petId; 
+        pet.category = category; // associar pet.categopry com a subclasse
+        pet.category.id = catId;
+        pet.category.name = catName;
+        pet.name = petName;
+        // pet.photoUrls = nao precisa ser incluido pq ta vazio
+        pet.tags = tags; 
+        pet.tags[0].id = 9;
+        pet.tags[0].name = "vacinado";
+        pet.tags[1].id = 8;
+        pet.tags[1].name = "vermifugado";
+        pet.status = status1; // status inicial
+
+        // criar um json para o body ser enviado a partir da classe Pet e do CSV
+        Gson gson = new Gson(); // instancia a classe Gson com o objeto gson
+        String jsonBody = gson.toJson(pet);
+
+        given()
+            .contentType(ct)
+            .log().all()
+            .body(jsonBody)
+        .when()
+            .post(uriPet)
+        .then()
+            .log().all()
+            .statusCode(200)
+            .body("id", is(petId))
+            .body("name", is(petName))
+            .body("category.id", is(catId))
+            .body("category.name", is(catName))
+            .body("status", is(status1))    // inicial do post
+            ;
+    }
+
 }
